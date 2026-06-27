@@ -28,10 +28,14 @@ export default function Layout({ children }: { children: ReactNode }) {
   ]
 
   return (
-    <div className="min-h-screen bg-stone-50 dark:bg-[oklch(14%_0.02_60)] text-stone-900 dark:text-stone-100">
-      <header className="sticky top-0 z-10 border-b border-stone-200 dark:border-stone-800 bg-white/90 dark:bg-stone-900/90 backdrop-blur-sm">
-        <div className="max-w-5xl mx-auto px-4 h-14 flex items-center gap-6">
-          <span className="font-bold text-brand-500 text-lg tracking-tight shrink-0">TarifAra</span>
+    <div className="min-h-screen bg-[#070707] text-[#BDBDBD] dark:bg-[#070707] dark:text-[#BDBDBD]"
+         style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+      <header className="glass sticky top-0 z-10 border-b border-white/10">
+        <div className="max-w-[1280px] mx-auto px-4 h-14 flex items-center gap-6">
+          <span className="font-semibold text-[#D9A35F] text-lg tracking-tight shrink-0"
+                style={{ fontFamily: "'Playfair Display', Georgia, serif" }}>
+            TarifAra
+          </span>
           <nav className="hidden md:flex items-center gap-1 flex-1 overflow-x-auto">
             {navItems.map(({ to, label, end }) => (
               <NavLink
@@ -41,8 +45,8 @@ export default function Layout({ children }: { children: ReactNode }) {
                 className={({ isActive }) =>
                   `px-3 py-1.5 rounded-lg text-sm font-medium whitespace-nowrap transition-colors duration-150 min-h-11 flex items-center
                   ${isActive
-                    ? 'bg-brand-50 dark:bg-brand-700/20 text-brand-600 dark:text-brand-400'
-                    : 'text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 hover:bg-stone-100 dark:hover:bg-stone-800'
+                    ? 'bg-[#D9A35F]/10 text-[#D9A35F] border border-[#D9A35F]/20'
+                    : 'text-[#BDBDBD] hover:text-white hover:bg-white/5'
                   }`
                 }
               >
@@ -59,8 +63,8 @@ export default function Layout({ children }: { children: ReactNode }) {
                 aria-pressed={locale === key}
                 className={`px-2 py-1 rounded text-xs font-semibold transition-colors min-h-9
                   ${locale === key
-                    ? 'bg-brand-500 text-white'
-                    : 'text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800'
+                    ? 'bg-[#D9A35F] text-[#070707]'
+                    : 'text-[#BDBDBD] hover:bg-white/5 hover:text-white'
                   }`}
               >
                 {label}
@@ -69,13 +73,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           </div>
           {user ? (
             <div className="flex items-center gap-2 shrink-0">
-              <span className="text-xs text-stone-500 dark:text-stone-400 hidden sm:block max-w-24 truncate">
+              <span className="text-xs text-[#BDBDBD]/60 hidden sm:block max-w-24 truncate">
                 {user.email}
               </span>
               <button
                 onClick={signOut}
                 aria-label={t.auth.signOut}
-                className="px-2 py-1 rounded text-xs font-semibold text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors min-h-9"
+                className="px-2 py-1 rounded text-xs font-semibold text-[#BDBDBD] hover:bg-white/5 hover:text-white transition-colors min-h-9"
               >
                 {t.auth.signOut}
               </button>
@@ -83,7 +87,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           ) : (
             <Link
               to="/auth"
-              className="px-2 py-1 rounded text-xs font-semibold text-brand-600 dark:text-brand-400 hover:bg-brand-50 dark:hover:bg-brand-700/20 transition-colors min-h-9 flex items-center shrink-0"
+              className="px-2 py-1 rounded text-xs font-semibold text-[#D9A35F] hover:bg-[#D9A35F]/10 transition-colors min-h-9 flex items-center shrink-0"
             >
               {t.auth.signIn}
             </Link>
@@ -91,7 +95,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           {isInstallable && (
             <button
               onClick={promptInstall}
-              className="hidden md:flex items-center gap-1.5 min-h-9 px-3 rounded-xl border border-brand-500 text-brand-600 dark:text-brand-400 text-xs font-medium hover:bg-brand-50 dark:hover:bg-brand-700/20 transition-colors shrink-0"
+              className="hidden md:flex items-center gap-1.5 min-h-9 px-3 rounded-xl border border-[#D9A35F] text-[#D9A35F] text-xs font-medium hover:bg-[#D9A35F]/10 transition-colors shrink-0"
             >
               ⬇ Install
             </button>
@@ -99,13 +103,13 @@ export default function Layout({ children }: { children: ReactNode }) {
           <button
             onClick={toggleDark}
             aria-label={dark ? t.darkMode.toLight : t.darkMode.toDark}
-            className="min-h-11 min-w-11 flex items-center justify-center rounded-lg text-stone-500 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800 transition-colors duration-150 text-base shrink-0"
+            className="min-h-11 min-w-11 flex items-center justify-center rounded-lg text-[#BDBDBD] hover:bg-white/5 hover:text-white transition-colors duration-150 text-base shrink-0"
           >
             {dark ? '☀' : '☾'}
           </button>
         </div>
       </header>
-      <main className="max-w-5xl mx-auto px-4 py-6 pb-20 md:pb-6">
+      <main className="max-w-[1280px] mx-auto px-4 py-6 pb-20 md:pb-6">
         {children}
       </main>
       <BottomNav />

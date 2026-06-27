@@ -14,8 +14,8 @@ export default defineConfig({
         name: 'TarifAra — Recipe Planner',
         short_name: 'TarifAra',
         description: 'Discover recipes, plan your week, auto-generate shopping list.',
-        theme_color: '#d97706',
-        background_color: '#fafaf9',
+        theme_color: '#070707',
+        background_color: '#070707',
         display: 'standalone',
         start_url: '/',
         icons: [

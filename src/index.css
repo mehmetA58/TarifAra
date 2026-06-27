@@ -4,51 +4,94 @@
 @custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
 
 @theme {
-  /* Warm amber brand palette */
-  --color-brand-50:  oklch(97% 0.03 55);
-  --color-brand-100: oklch(93% 0.07 55);
-  --color-brand-200: oklch(86% 0.12 52);
-  --color-brand-400: oklch(78% 0.18 52);
-  --color-brand-500: oklch(70% 0.20 50);
-  --color-brand-600: oklch(60% 0.20 50);
-  --color-brand-700: oklch(50% 0.18 50);
+  /* ── Basilico brand palette ── */
+  --color-luxury-gold:  #D9A35F;
+  --color-burnt-orange: #C97A2B;
+  --color-warm-gray:    #BDBDBD;
+  --color-near-black:   #070707;
+
+  /* Gold scale — brand-* keeps backward compat with existing components */
+  --color-brand-50:  oklch(97% 0.04 55);
+  --color-brand-100: oklch(88% 0.08 55);
+  --color-brand-300: oklch(75% 0.14 52);
+  --color-brand-400: oklch(68% 0.18 50);
+  --color-brand-500: #D9A35F;
+  --color-brand-600: #C97A2B;
+  --color-brand-700: oklch(42% 0.16 50);
+
+  /* ── Typography ── */
+  --font-display: 'Playfair Display', Georgia, serif;
+  --font-body:    'Inter', system-ui, sans-serif;
 }
 
-/* Base document colors */
+/* ───────────────────────────────
+   BASE: DARK-FIRST
+   Light mode overrides come after
+─────────────────────────────────*/
 html {
-  background-color: oklch(98% 0.01 60);
-  color: oklch(18% 0.02 60);
+  background-color: #070707;
+  color: #BDBDBD;
+  color-scheme: dark;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 300;
+}
+
+/* Light mode override */
+html:not([data-theme="dark"]) {
+  background-color: oklch(97% 0.01 55);
+  color: oklch(18% 0.02 55);
   color-scheme: light;
 }
 
+/* Dark mode (explicit) */
 html[data-theme="dark"] {
-  background-color: oklch(14% 0.02 60);
-  color: oklch(92% 0.01 60);
+  background-color: #070707;
+  color: #BDBDBD;
   color-scheme: dark;
 }
 
-/* Global visible focus ring — WCAG AA */
+/* ── Focus ring — WCAG AA on dark bg ── */
 :focus-visible {
-  outline: 2px solid var(--color-brand-500);
+  outline: 2px solid #D9A35F;
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Safe-area for notched devices (iPhone, Android) */
+/* ── Safe area (notched devices) ── */
 body {
   padding-left: env(safe-area-inset-left);
   padding-right: env(safe-area-inset-right);
+  font-family: 'Inter', system-ui, sans-serif;
 }
 
-/* Bottom nav safe-area clearance */
+/* ── Bottom nav safe-area clearance ── */
 .bottom-nav-safe {
   padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
 }
 
-/* Respect reduced-motion preference */
+/* ── Reduced-motion ── */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+/* ── Glass utility ── */
+.glass {
+  background: rgb(255 255 255 / 0.05);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgb(255 255 255 / 0.10);
+  box-shadow: 0 0 0 1px rgb(217 163 95 / 0.15), 0 8px 32px rgb(0 0 0 / 0.4);
+}
+
+.glass-card:hover {
+  border-color: rgb(217 163 95 / 0.35);
+  box-shadow: 0 0 0 1px rgb(217 163 95 / 0.25), 0 16px 48px rgb(0 0 0 / 0.5);
+}
+
+/* ── Hide native cursor on pointer devices (custom cursor replaces it) ── */
+@media (pointer: fine) {
+  body, a, button, [role="button"] { cursor: none; }
 }

@@ -43,8 +43,11 @@ export default function ShoppingPage() {
         const map = new Map<string, string[]>()
         for (const meal of meals) {
           if (!meal) continue
+          const seenInMeal = new Set<string>()
           for (const ing of parseIngredients(meal)) {
             const key = ing.name.toLowerCase()
+            if (seenInMeal.has(key)) continue
+            seenInMeal.add(key)
             if (!map.has(key)) map.set(key, [])
             if (ing.measure) map.get(key)!.push(ing.measure)
           }

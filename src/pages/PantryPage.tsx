@@ -91,7 +91,7 @@ function BarcodeScanner({ onDetect, onError }: BarcodeScannerProps) {
 
   return (
     <div className="relative rounded-xl overflow-hidden bg-black">
-      <video ref={videoRef} className="w-full max-h-64 object-cover" muted playsInline />
+      <video ref={videoRef} className="w-full max-h-64 object-cover" muted playsInline aria-label="Barcode camera scanner" />
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="w-48 h-32 border-2 border-white/60 rounded-lg" />
       </div>
@@ -124,18 +124,7 @@ export default function PantryPage() {
   const [loading, setLoading] = useState(false)
   const [fetchError, setFetchError] = useState<string | null>(null)
 
-  const handleDetect = useCallback((code: string) => {
-    setScanning(false)
-    setBarcode(code)
-    fetchProduct(code)
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const handleCameraError = useCallback((_msg: string) => {
-    setScanning(false)
-    setCameraError(t.pantry.cameraError)
-  }, [t.pantry.cameraError])
-
-  async function fetchProduct(code: string) {
+  const fetchProduct = useCallback(async (code: string) => {
     if (!code.trim()) return
     setLoading(true)
     setFetchError(null)
@@ -148,7 +137,18 @@ export default function PantryPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [t.error.generic])
+
+  const handleDetect = useCallback((code: string) => {
+    setScanning(false)
+    setBarcode(code)
+    fetchProduct(code)
+  }, [fetchProduct])
+
+  const handleCameraError = useCallback((_msg: string) => {
+    setScanning(false)
+    setCameraError(t.pantry.cameraError)
+  }, [t.pantry.cameraError])
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()

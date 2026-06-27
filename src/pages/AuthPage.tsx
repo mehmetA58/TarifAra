@@ -16,6 +16,10 @@ export default function AuthPage() {
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     setError(null)
+    if (password.length < 6) {
+      setError(t.auth.error)
+      return
+    }
     setLoading(true)
     const err = mode === 'signin'
       ? await signIn(email, password)

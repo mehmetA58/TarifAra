@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useDebounce } from '../hooks/useDebounce'
 import { useTranslation } from '../context/I18nContext'
 import MealCard from '../components/MealCard'
@@ -9,6 +9,13 @@ import {
   getCategories,
 } from '../api/mealdb'
 import type { MealDetail, MealSummary, Category } from '../types/meal'
+import gsap from 'gsap'
+import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useGSAP } from '@gsap/react'
+
+const DIET_FILTERS = ['Vegan', 'Vegetarian'] as const
+
+gsap.registerPlugin(ScrollTrigger)
 
 type Mode = 'categories' | 'category-meals' | 'search'
 
@@ -24,7 +31,9 @@ export default function HomePage() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
-  // Derive mode from state
+  const categoriesRef = useRef<HTMLUListElement>(null)
+  const mealsRef = useRef<HTMLUListElement>(null)
+
   useEffect(() => {
     if (debouncedQuery.trim()) {
       setMode('search')
@@ -35,7 +44,6 @@ export default function HomePage() {
     }
   }, [debouncedQuery, selectedCategory])
 
-  // Fetch data based on mode
   useEffect(() => {
     let cancelled = false
 
@@ -62,10 +70,52 @@ export default function HomePage() {
     }
 
     load()
-    return () => {
-      cancelled = true
-    }
+    return () => { cancelled = true }
   }, [mode, debouncedQuery, selectedCategory, t.error.generic])
+
+  useGSAP(() => {
+    if (!categoriesRef.current) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const items = categoriesRef.current.querySelectorAll('li')
+    if (!items.length) return
+    gsap.fromTo(
+      items,
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: categoriesRef.current,
+          start: 'top 88%',
+          once: true,
+        },
+      }
+    )
+  }, { scope: categoriesRef, dependencies: [categories] })
+
+  useGSAP(() => {
+    if (!mealsRef.current) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+    const items = mealsRef.current.querySelectorAll('li')
+    if (!items.length) return
+    gsap.fromTo(
+      items,
+      { opacity: 0, y: 40 },
+      {
+        opacity: 1, y: 0,
+        duration: 0.8,
+        stagger: 0.06,
+        ease: 'power3.out',
+        scrollTrigger: {
+          trigger: mealsRef.current,
+          start: 'top 88%',
+          once: true,
+        },
+      }
+    )
+  }, { scope: mealsRef, dependencies: [meals] })
 
   function handleSearchChange(e: React.ChangeEvent<HTMLInputElement>) {
     setQuery(e.target.value)
@@ -90,15 +140,18 @@ export default function HomePage() {
           onChange={handleSearchChange}
           placeholder={t.search.placeholder}
           aria-label={t.search.label}
-          className="w-full rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-4 py-3 text-base shadow-sm placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500 transition-shadow duration-150"
+          className="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-base
+                     text-white placeholder:text-[#BDBDBD]/50 backdrop-blur-sm
+                     focus:outline-none focus:border-[#D9A35F]/50 focus:ring-1 focus:ring-[#D9A35F]/30
+                     transition-all duration-200"
         />
       </div>
 
       {/* Diet filter buttons */}
       {!debouncedQuery.trim() && (
         <div className="flex items-center gap-2 mb-4">
-          <span className="text-xs font-medium text-stone-500 dark:text-stone-400">{t.diet.label}:</span>
-          {(['Vegan', 'Vegetarian'] as const).map(diet => (
+          <span className="text-xs font-medium text-[#BDBDBD]/60">{t.diet.label}:</span>
+          {DIET_FILTERS.map(diet => (
             <button
               key={diet}
               onClick={() => {
@@ -108,8 +161,8 @@ export default function HomePage() {
               aria-pressed={selectedCategory === diet}
               className={`px-3 py-1 rounded-full text-xs font-semibold border transition-colors min-h-8
                 ${selectedCategory === diet
-                  ? 'bg-brand-500 text-white border-brand-500'
-                  : 'border-stone-300 dark:border-stone-600 text-stone-600 dark:text-stone-400 hover:border-brand-400 hover:text-brand-600'
+                  ? 'bg-[#D9A35F] text-[#070707] border-[#D9A35F]'
+                  : 'border-white/20 text-[#BDBDBD] hover:border-[#D9A35F]/50 hover:text-[#D9A35F]'
                 }`}
             >
               {diet === 'Vegan' ? t.diet.vegan : t.diet.vegetarian}
@@ -122,7 +175,7 @@ export default function HomePage() {
       {mode === 'category-meals' && (
         <button
           onClick={handleBackToCategories}
-          className="mb-4 flex items-center gap-1.5 text-brand-600 dark:text-brand-400 font-medium text-sm hover:underline min-h-9"
+          className="mb-4 flex items-center gap-1.5 text-[#D9A35F] font-medium text-sm hover:underline min-h-9"
           aria-label={t.categories.back}
         >
           {t.categories.back}
@@ -138,7 +191,7 @@ export default function HomePage() {
 
       {/* Error */}
       {!loading && error && (
-        <div role="alert" className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 text-sm">
+        <div role="alert" className="rounded-xl bg-red-900/20 border border-red-800/50 text-red-400 px-4 py-3 text-sm">
           &#9888; {error}
         </div>
       )}
@@ -146,18 +199,36 @@ export default function HomePage() {
       {/* Categories grid */}
       {!loading && !error && mode === 'categories' && (
         categories.length === 0 ? (
-          <p className="text-center text-stone-400 py-12">{t.categories.empty}</p>
+          <p className="text-center text-[#BDBDBD]/50 py-12">{t.categories.empty}</p>
         ) : (
-          <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <ul ref={categoriesRef} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {categories.map(cat => (
               <li key={cat.idCategory}>
                 <button
                   onClick={() => handleCategoryClick(cat.strCategory)}
-                  className="block w-full text-left rounded-xl overflow-hidden shadow-sm bg-white dark:bg-stone-800 motion-safe:transition-all motion-safe:duration-200 motion-safe:hover:shadow-md motion-safe:hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-500"
+                  className="glass glass-card group block w-full text-left rounded-[16px] overflow-hidden
+                             motion-safe:transition-all motion-safe:duration-300
+                             motion-safe:hover:-translate-y-1
+                             focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#D9A35F]"
                   aria-label={t.categories.viewLabel(cat.strCategory)}
                 >
-                  <img src={cat.strCategoryThumb} alt={cat.strCategory} className="aspect-video object-cover w-full" loading="lazy" />
-                  <p className="px-3 py-2.5 text-sm font-medium text-stone-800 dark:text-stone-100">{cat.strCategory}</p>
+                  <div className="relative aspect-[4/3] overflow-hidden">
+                    <img
+                      src={cat.strCategoryThumb}
+                      alt={cat.strCategory}
+                      className="w-full h-full object-cover
+                                 motion-safe:transition-transform motion-safe:duration-500
+                                 motion-safe:group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent
+                                    opacity-0 motion-safe:transition-opacity motion-safe:duration-300
+                                    group-hover:opacity-100" />
+                  </div>
+                  <p className="px-3 py-3 text-sm font-medium text-[#BDBDBD] group-hover:text-white
+                                motion-safe:transition-colors motion-safe:duration-200">
+                    {cat.strCategory}
+                  </p>
                 </button>
               </li>
             ))}
@@ -168,9 +239,9 @@ export default function HomePage() {
       {/* Meals grid (search or category-meals) */}
       {!loading && !error && (mode === 'search' || mode === 'category-meals') && (
         meals.length === 0 ? (
-          <p className="text-center text-stone-400 py-12">{t.meals.empty}</p>
+          <p className="text-center text-[#BDBDBD]/50 py-12">{t.meals.empty}</p>
         ) : (
-          <ul className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+          <ul ref={mealsRef} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
             {meals.map(meal => (
               <li key={meal.idMeal}>
                 <MealCard id={meal.idMeal} name={meal.strMeal} thumb={meal.strMealThumb} />

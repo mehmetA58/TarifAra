@@ -13,18 +13,33 @@ interface DraggableCardProps {
   strMeal: string
   strMealThumb: string
   ariaLabel: string
+  isKbSelected: boolean
+  onKeyboardSelect: (entry: NonNullable<PlanEntry>) => void
 }
 
-function DraggableCard({ idMeal, strMeal, strMealThumb, ariaLabel }: DraggableCardProps) {
+function DraggableCard({ idMeal, strMeal, strMealThumb, ariaLabel, isKbSelected, onKeyboardSelect }: DraggableCardProps) {
   return (
     <div
       draggable
+      role="button"
+      tabIndex={0}
       onDragStart={e => {
         e.dataTransfer.setData('application/json', JSON.stringify({ idMeal, strMeal, strMealThumb }))
         e.dataTransfer.effectAllowed = 'copy'
       }}
-      className="flex items-center gap-2 p-2 cursor-grab active:cursor-grabbing rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 motion-safe:transition-shadow motion-safe:hover:shadow-md select-none"
+      onKeyDown={e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onKeyboardSelect({ idMeal, strMeal, strMealThumb })
+        }
+      }}
       aria-label={ariaLabel}
+      aria-pressed={isKbSelected}
+      className={`flex items-center gap-2 p-2 cursor-grab active:cursor-grabbing rounded-xl border motion-safe:transition-shadow motion-safe:hover:shadow-md select-none
+        ${isKbSelected
+          ? 'border-brand-500 bg-brand-50 dark:bg-brand-900/20 ring-2 ring-brand-500'
+          : 'border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800'
+        }`}
     >
       <img src={strMealThumb} alt={strMeal} loading="lazy" className="w-10 h-10 object-cover rounded-lg shrink-0" />
       <span className="text-xs font-medium leading-tight line-clamp-2 text-stone-700 dark:text-stone-200">{strMeal}</span>
@@ -41,22 +56,36 @@ interface PlanCellProps {
   removeLabel: (name: string) => string
   onDrop: (day: Day, slot: MealSlot, entry: NonNullable<PlanEntry>) => void
   onRemove: (day: Day, slot: MealSlot) => void
+  kbMeal: NonNullable<PlanEntry> | null
+  onKeyDrop: (day: Day, slot: MealSlot) => void
 }
 
-function PlanCell({ day, slot, entry, dropText, removeLabel, onDrop, onRemove }: PlanCellProps) {
+function PlanCell({ day, slot, entry, dropText, removeLabel, onDrop, onRemove, kbMeal, onKeyDrop }: PlanCellProps) {
   const [dragOver, setDragOver] = useState(false)
+  const isKbTarget = !entry && kbMeal !== null
   return (
     <td
       className={`border border-stone-200 dark:border-stone-700 p-1.5 min-w-[7rem] align-top transition-colors duration-100
         ${dragOver ? 'bg-brand-50 dark:bg-brand-900/20 border-brand-400' : 'bg-white dark:bg-stone-900'}`}
+      tabIndex={isKbTarget ? 0 : -1}
+      role="region"
+      aria-label={`${slot} — ${day}${entry ? ': ' + entry.strMeal : isKbTarget ? ' (press Enter to place ' + kbMeal!.strMeal + ')' : ''}`}
       onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setDragOver(true) }}
       onDragLeave={() => setDragOver(false)}
       onDrop={e => {
         e.preventDefault(); setDragOver(false)
         try {
-          const parsed = JSON.parse(e.dataTransfer.getData('application/json')) as NonNullable<PlanEntry>
-          if (parsed?.idMeal) onDrop(day, slot, parsed)
+          const raw = JSON.parse(e.dataTransfer.getData('application/json'))
+          if (raw?.idMeal && raw?.strMeal && raw?.strMealThumb) {
+            onDrop(day, slot, raw as NonNullable<PlanEntry>)
+          }
         } catch { /* ignore */ }
+      }}
+      onKeyDown={e => {
+        if ((e.key === 'Enter' || e.key === ' ') && isKbTarget) {
+          e.preventDefault()
+          onKeyDrop(day, slot)
+        }
       }}
     >
       {entry ? (
@@ -88,6 +117,16 @@ export default function PlannerPage() {
   // Mobile state
   const [selectedDay, setSelectedDay] = useState<Day>('Monday')
   const [mobileSearchOpen, setMobileSearchOpen] = useState(false)
+
+  // Keyboard drag-and-drop state
+  const [kbMeal, setKbMeal] = useState<NonNullable<PlanEntry> | null>(null)
+
+  function handleKeyDrop(day: Day, slot: MealSlot) {
+    if (kbMeal) {
+      setPlanEntry(day, slot, kbMeal)
+      setKbMeal(null)
+    }
+  }
 
   // Sidebar: favorites fetched by ID
   const [favMeals, setFavMeals] = useState<MealDetail[]>([])
@@ -286,6 +325,8 @@ export default function PlannerPage() {
                   strMeal={m.strMeal}
                   strMealThumb={m.strMealThumb}
                   ariaLabel={t.planner.mealLabel(m.strMeal)}
+                  isKbSelected={kbMeal?.idMeal === m.idMeal}
+                  onKeyboardSelect={setKbMeal}
                 />
               </li>
             ))}
@@ -316,6 +357,8 @@ export default function PlannerPage() {
                       removeLabel={t.detail.removeLabel}
                       onDrop={setPlanEntry}
                       onRemove={removePlanEntry}
+                      kbMeal={kbMeal}
+                      onKeyDrop={handleKeyDrop}
                     />
                   ))}
                 </tr>

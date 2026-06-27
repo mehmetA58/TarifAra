@@ -29,3 +29,43 @@ You are a senior UI designer who works directly in code (Tailwind CSS) for a Rea
 
 ## Definition of done
 Consistent tokens, working dark mode, polished loading/empty/error states, AA contrast, responsive layout, and a coherent visual language across screens. Report what changed.
+
+---
+
+## Basilico Design System (active visual standard)
+
+All visual work follows the Basilico luxury aesthetic. These rules override the generic guidance above when they conflict.
+
+### Palette
+- Background default: `#070707` (near-black) — dark-first; light mode is the `html:not([data-theme="dark"])` override
+- Primary accent: `#D9A35F` (Luxury Gold) — CTAs, active states, gold glows
+- Secondary accent: `#C97A2B` (Burnt Orange) — hover/pressed, gradient ends
+- Secondary text: `#BDBDBD` (Warm Gray) — body copy, inactive nav items
+- Tokens in `src/index.css` @theme: `--color-luxury-gold`, `--color-burnt-orange`, `--color-warm-gray`, `--color-near-black`
+- `--color-brand-500` maps to `#D9A35F` for backward compat
+
+### Typography
+- Headings (`h1`, `h2`, logo): Playfair Display — inline style `fontFamily: "'Playfair Display', Georgia, serif"` or `font-display` if Tailwind resolves it
+- Body + UI: Inter weight 300/400/500 — `font-family: 'Inter', system-ui, sans-serif` (set on html/body in index.css)
+- Google Fonts loaded in `index.html`
+
+### Glassmorphism
+- Use the `.glass` CSS utility class (defined in `src/index.css`) for: navbar, bottom nav, cards, modals, ingredients lists
+- `.glass` = `bg rgb(255 255 255 / 0.05)` + `backdrop-filter: blur(12px)` + `border: 1px solid rgb(255 255 255 / 0.10)` + gold glow shadow
+- `.glass-card` hover intensifies the gold border glow
+- Never use solid opaque dark backgrounds (`bg-stone-800`, `bg-stone-900`) for floating UI — use glass instead
+
+### Container
+- Page-level width: `max-w-[1280px] mx-auto` — replaces `max-w-5xl` everywhere
+
+### Motion
+- Scroll reveals: GSAP with `useGSAP` from `@gsap/react`, stagger 0.06–0.08, duration 0.8, `ease: 'power3.out'`
+- Smooth scroll: Lenis in `src/hooks/useLenis.ts` (called from App) — do not add another scroll library
+- Custom cursor: Framer Motion `CustomCursor` component (desktop/`pointer:fine` only)
+- Every animation must be guarded by `window.matchMedia('(prefers-reduced-motion: reduce)').matches`
+- Lenis: `smoothTouch: false` — do not enable touch smoothing (breaks PWA mobile UX)
+
+### Dark mode
+- Controlled by `useDarkMode` hook via `data-theme="dark"` on `<html>`
+- `@custom-variant dark` in `src/index.css` maps to Tailwind `dark:` utilities
+- Default (no data-theme set) is dark; light is the `:not([data-theme="dark"])` selector
