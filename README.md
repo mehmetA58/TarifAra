@@ -74,7 +74,7 @@ npm run lint       # Oxlint
 
 ## Deploy to GitHub Pages
 
-The workflow at `.github/workflows/deploy.yml` runs automatically on every push to `main`.
+The workflow at `.github/workflows/deploy.yml` runs automatically on every push to `master`.
 
 **One-time setup:**
 
@@ -84,7 +84,7 @@ The workflow at `.github/workflows/deploy.yml` runs automatically on every push 
    - `VITE_SUPABASE_URL`
    - `VITE_SUPABASE_ANON_KEY`
    (Skip both if you are not using cloud sync — the app degrades gracefully.)
-4. Push to `main` (or trigger **Actions → Deploy to GitHub Pages → Run workflow**).
+4. Push to `master` (or trigger **Actions → Deploy to GitHub Pages → Run workflow**).
 
 Your site will be live at `https://<username>.github.io/TarifAra/`.
 
