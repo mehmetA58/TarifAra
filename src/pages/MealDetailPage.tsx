@@ -2,12 +2,14 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { getMealById, parseIngredients } from '../api/mealdb'
 import type { MealDetail, Ingredient } from '../types/meal'
+import { useAppContext } from '../context/AppContext'
 
 export default function MealDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [meal, setMeal] = useState<MealDetail | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
+  const { toggleFavorite, isFavorite } = useAppContext()
 
   useEffect(() => {
     if (!id) return
@@ -50,6 +52,14 @@ export default function MealDetailPage() {
       <img src={meal.strMealThumb} alt={meal.strMeal} className="w-full mt-4" />
 
       <h1 className="text-2xl font-bold mt-4">{meal.strMeal}</h1>
+
+      <button
+        onClick={() => toggleFavorite(meal.idMeal)}
+        aria-label={isFavorite(meal.idMeal) ? 'Favorilerden çıkar' : 'Favorilere ekle'}
+        className="mt-2"
+      >
+        {isFavorite(meal.idMeal) ? '♥ Favorilerden Çıkar' : '♡ Favorilere Ekle'}
+      </button>
 
       <p className="mt-2">
         <span>{meal.strCategory}</span>
