@@ -77,6 +77,7 @@ export default function MealDetailPage() {
       <img
         src={meal.strMealThumb}
         alt={meal.strMeal}
+        loading="eager"
         className="w-full max-h-80 object-cover rounded-2xl mt-2 shadow-md"
       />
 

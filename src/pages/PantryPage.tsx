@@ -254,6 +254,7 @@ export default function PantryPage() {
             <img
               src={product.image_url}
               alt={product.product_name ?? ''}
+              loading="lazy"
               className="w-full max-h-56 object-contain bg-stone-50 dark:bg-stone-900 p-4"
             />
           )}
@@ -329,7 +330,7 @@ export default function PantryPage() {
             {pantry.map(item => (
               <li key={item.barcode} className="flex items-center gap-3 p-3 bg-white dark:bg-stone-800">
                 {item.image_url ? (
-                  <img src={item.image_url} alt={item.product_name} className="w-12 h-12 object-contain rounded-lg bg-stone-50 dark:bg-stone-900 shrink-0" />
+                  <img src={item.image_url} alt={item.product_name} loading="lazy" className="w-12 h-12 object-contain rounded-lg bg-stone-50 dark:bg-stone-900 shrink-0" />
                 ) : (
                   <div className="w-12 h-12 rounded-lg bg-stone-100 dark:bg-stone-700 shrink-0" />
                 )}
