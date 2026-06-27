@@ -1,0 +1,93 @@
+export const messages = {
+  nav: {
+    explore: 'Explorar',
+    favorites: 'Favoritos',
+    planner: 'Planificador',
+    shopping: 'Compras',
+  },
+  search: {
+    placeholder: 'Buscar recetas, ingredientes o categorías…',
+    label: 'Buscar recetas',
+  },
+  diet: {
+    label: 'Dieta',
+    vegan: 'Vegano',
+    vegetarian: 'Vegetariano',
+  },
+  categories: {
+    back: '← Categorías',
+    empty: 'No se encontraron categorías.',
+    viewLabel: (name: string) => `Ver categoría ${name}`,
+  },
+  meals: {
+    empty: 'No se encontraron resultados.',
+    notFound: 'Receta no encontrada.',
+  },
+  detail: {
+    back: '← Volver',
+    ingredients: 'Ingredientes',
+    instructions: 'Preparación',
+    addFavorite: 'Añadir a favoritos',
+    removeFavorite: 'Favorito',
+    watchYoutube: 'Ver en YouTube',
+    watchYoutubeLabel: (name: string) => `Ver ${name} en YouTube`,
+    removeLabel: (name: string) => `Eliminar ${name}`,
+    favoriteLabel: (active: boolean): string => active ? 'Quitar de favoritos' : 'Añadir a favoritos',
+  },
+  favorites: {
+    title: 'Favoritos',
+    empty: 'Aún no hay favoritos.',
+    hint: 'Añade recetas desde la página de detalles.',
+  },
+  planner: {
+    title: 'Planificador Semanal',
+    drop: 'Soltar aquí',
+    searchPlaceholder: 'Buscar…',
+    noFavorites: 'Aún no hay favoritos.',
+    noResults: 'No se encontraron resultados.',
+    mealLabel: (name: string) => `${name} — arrastra para añadir al planificador`,
+    mealSlot: 'Comida',
+  },
+  shopping: {
+    title: 'Lista de Compras',
+    empty: 'La lista está vacía.',
+    hint: 'Añade comidas al planificador semanal para ver los ingredientes aquí.',
+    plannerLink: 'planificador semanal',
+  },
+  notFound: {
+    heading: 'Página no encontrada',
+    description: 'La página que buscas no existe.',
+    home: 'Ir al inicio',
+  },
+  error: {
+    generic: 'Ha ocurrido un error.',
+  },
+  darkMode: {
+    toLight: 'Cambiar a modo claro',
+    toDark: 'Cambiar a modo oscuro',
+  },
+  auth: {
+    signIn: 'Iniciar sesión',
+    signUp: 'Registrarse',
+    signOut: 'Cerrar sesión',
+    email: 'Correo electrónico',
+    password: 'Contraseña',
+    noAccount: '¿No tienes cuenta?',
+    hasAccount: '¿Ya tienes cuenta?',
+    error: 'Error de autenticación.',
+  },
+  days: {
+    Monday: 'Lunes',
+    Tuesday: 'Martes',
+    Wednesday: 'Miércoles',
+    Thursday: 'Jueves',
+    Friday: 'Viernes',
+    Saturday: 'Sábado',
+    Sunday: 'Domingo',
+  },
+  slots: {
+    Breakfast: 'Desayuno',
+    Lunch: 'Almuerzo',
+    Dinner: 'Cena',
+  },
+}

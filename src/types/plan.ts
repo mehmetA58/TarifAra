@@ -1,15 +1,15 @@
-export type Day = 'Pazartesi' | 'Salı' | 'Çarşamba' | 'Perşembe' | 'Cuma' | 'Cumartesi' | 'Pazar'
-export type MealSlot = 'Kahvaltı' | 'Öğle' | 'Akşam'
+export type Day = 'Monday' | 'Tuesday' | 'Wednesday' | 'Thursday' | 'Friday' | 'Saturday' | 'Sunday'
+export type MealSlot = 'Breakfast' | 'Lunch' | 'Dinner'
 export type PlanEntry = { idMeal: string; strMeal: string; strMealThumb: string } | null
 export type WeeklyPlan = Record<Day, Record<MealSlot, PlanEntry>>
 
-export const DAYS: Day[] = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']
-export const SLOTS: MealSlot[] = ['Kahvaltı', 'Öğle', 'Akşam']
+export const DAYS: Day[] = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+export const SLOTS: MealSlot[] = ['Breakfast', 'Lunch', 'Dinner']
 
 export function emptyPlan(): WeeklyPlan {
   const plan = {} as WeeklyPlan
   for (const day of DAYS) {
-    plan[day] = { Kahvaltı: null, Öğle: null, Akşam: null }
+    plan[day] = { Breakfast: null, Lunch: null, Dinner: null }
   }
   return plan
 }

@@ -1,11 +1,11 @@
-// filter.php ve search.php gibi uçlar yalnızca özet döndürür:
+// filter.php and search.php endpoints return summary only:
 export interface MealSummary {
   idMeal: string;
   strMeal: string;
   strMealThumb: string;
 }
 
-// lookup.php / search.php tam tarifi döndürür (20 malzeme + 20 ölçü alanı):
+// lookup.php / search.php return the full recipe (20 ingredients + 20 measure fields):
 export interface MealDetail {
   idMeal: string;
   strMeal: string;
@@ -16,7 +16,7 @@ export interface MealDetail {
   strTags: string | null;
   strYoutube: string | null;
   strSource: string | null;
-  // strIngredient1..20 ve strMeasure1..20 alanları:
+  // strIngredient1..20 and strMeasure1..20 fields:
   [key: string]: string | null;
 }
 

@@ -4,11 +4,11 @@ const BASE = "https://www.themealdb.com/api/json/v1/1";
 
 async function getJson<T>(url: string): Promise<T> {
   const res = await fetch(url);
-  if (!res.ok) throw new Error(`TheMealDB hatası: ${res.status}`);
+  if (!res.ok) throw new Error(`TheMealDB error: ${res.status}`);
   return res.json() as Promise<T>;
 }
 
-// İsimle ara (tam detay döner)
+// Search by name (returns full detail)
 export async function searchMealsByName(query: string): Promise<MealDetail[]> {
   const data = await getJson<{ meals: MealDetail[] | null }>(
     `${BASE}/search.php?s=${encodeURIComponent(query)}`
@@ -16,7 +16,7 @@ export async function searchMealsByName(query: string): Promise<MealDetail[]> {
   return data.meals ?? [];
 }
 
-// Malzemeye göre filtrele (yalnızca özet döner)
+// Filter by ingredient (summary only)
 export async function filterByIngredient(ingredient: string): Promise<MealSummary[]> {
   const data = await getJson<{ meals: MealSummary[] | null }>(
     `${BASE}/filter.php?i=${encodeURIComponent(ingredient)}`
@@ -24,7 +24,7 @@ export async function filterByIngredient(ingredient: string): Promise<MealSummar
   return data.meals ?? [];
 }
 
-// Kategoriye göre filtrele (özet)
+// Filter by category (summary only)
 export async function filterByCategory(category: string): Promise<MealSummary[]> {
   const data = await getJson<{ meals: MealSummary[] | null }>(
     `${BASE}/filter.php?c=${encodeURIComponent(category)}`
@@ -32,7 +32,7 @@ export async function filterByCategory(category: string): Promise<MealSummary[]>
   return data.meals ?? [];
 }
 
-// Ülkeye/bölgeye göre filtrele (özet)
+// Filter by area (summary only)
 export async function filterByArea(area: string): Promise<MealSummary[]> {
   const data = await getJson<{ meals: MealSummary[] | null }>(
     `${BASE}/filter.php?a=${encodeURIComponent(area)}`
@@ -40,7 +40,7 @@ export async function filterByArea(area: string): Promise<MealSummary[]> {
   return data.meals ?? [];
 }
 
-// ID ile tam tarif
+// Full recipe by ID
 export async function getMealById(id: string): Promise<MealDetail | null> {
   const data = await getJson<{ meals: MealDetail[] | null }>(
     `${BASE}/lookup.php?i=${encodeURIComponent(id)}`
@@ -48,19 +48,19 @@ export async function getMealById(id: string): Promise<MealDetail | null> {
   return data.meals?.[0] ?? null;
 }
 
-// Rastgele tarif
+// Random recipe
 export async function getRandomMeal(): Promise<MealDetail | null> {
   const data = await getJson<{ meals: MealDetail[] | null }>(`${BASE}/random.php`);
   return data.meals?.[0] ?? null;
 }
 
-// Tüm kategoriler (zengin meta + görsel)
+// All categories with thumbnails
 export async function getCategories(): Promise<Category[]> {
   const data = await getJson<{ categories: Category[] }>(`${BASE}/categories.php`);
   return data.categories ?? [];
 }
 
-// strIngredient1..20 + strMeasure1..20 -> temiz malzeme listesi
+// Parse strIngredient1..20 + strMeasure1..20 into a clean ingredient list
 export function parseIngredients(meal: MealDetail): Ingredient[] {
   const out: Ingredient[] = [];
   for (let i = 1; i <= 20; i++) {

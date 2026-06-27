@@ -1,0 +1,93 @@
+export const messages = {
+  nav: {
+    explore: 'Keşfet',
+    favorites: 'Favoriler',
+    planner: 'Plan',
+    shopping: 'Alışveriş',
+  },
+  search: {
+    placeholder: 'Tarif, malzeme veya kategori ara…',
+    label: 'Tarif ara',
+  },
+  diet: {
+    label: 'Diyet',
+    vegan: 'Vegan',
+    vegetarian: 'Vejetaryen',
+  },
+  categories: {
+    back: '← Kategoriler',
+    empty: 'Kategori bulunamadı.',
+    viewLabel: (name: string) => `${name} kategorisini görüntüle`,
+  },
+  meals: {
+    empty: 'Sonuç bulunamadı.',
+    notFound: 'Tarif bulunamadı.',
+  },
+  detail: {
+    back: '← Geri',
+    ingredients: 'Malzemeler',
+    instructions: 'Hazırlanışı',
+    addFavorite: 'Favorilere Ekle',
+    removeFavorite: 'Favori',
+    watchYoutube: "YouTube'da İzle",
+    watchYoutubeLabel: (name: string) => `${name} tarifini YouTube'da izle`,
+    removeLabel: (name: string) => `${name} kaldır`,
+    favoriteLabel: (active: boolean): string => active ? 'Favorilerden çıkar' : 'Favorilere ekle',
+  },
+  favorites: {
+    title: 'Favoriler',
+    empty: 'Henüz favori yok.',
+    hint: 'Tarif detay sayfasından favorilere ekleyebilirsin.',
+  },
+  planner: {
+    title: 'Haftalık Plan',
+    drop: 'Bırak',
+    searchPlaceholder: 'Ara…',
+    noFavorites: 'Henüz favori yok.',
+    noResults: 'Sonuç bulunamadı.',
+    mealLabel: (name: string) => `${name} — sürükleyerek plana ekle`,
+    mealSlot: 'Öğün',
+  },
+  shopping: {
+    title: 'Alışveriş Listesi',
+    empty: 'Liste boş.',
+    hint: 'Haftalık plana yemek ekleyince malzemeler burada görünür.',
+    plannerLink: 'haftalık plan',
+  },
+  notFound: {
+    heading: 'Sayfa bulunamadı',
+    description: 'Aradığın sayfa mevcut değil.',
+    home: 'Ana Sayfaya Dön',
+  },
+  error: {
+    generic: 'Bir hata oluştu.',
+  },
+  darkMode: {
+    toLight: 'Açık moda geç',
+    toDark: 'Koyu moda geç',
+  },
+  auth: {
+    signIn: 'Giriş Yap',
+    signUp: 'Kayıt Ol',
+    signOut: 'Çıkış Yap',
+    email: 'E-posta',
+    password: 'Şifre',
+    noAccount: 'Hesabın yok mu?',
+    hasAccount: 'Zaten hesabın var mı?',
+    error: 'Kimlik doğrulama başarısız.',
+  },
+  days: {
+    Monday: 'Pazartesi',
+    Tuesday: 'Salı',
+    Wednesday: 'Çarşamba',
+    Thursday: 'Perşembe',
+    Friday: 'Cuma',
+    Saturday: 'Cumartesi',
+    Sunday: 'Pazar',
+  },
+  slots: {
+    Breakfast: 'Kahvaltı',
+    Lunch: 'Öğle',
+    Dinner: 'Akşam',
+  },
+}

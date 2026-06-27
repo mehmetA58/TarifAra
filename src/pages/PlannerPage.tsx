@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
+import { useTranslation } from '../context/I18nContext'
 import { getMealById, searchMealsByName } from '../api/mealdb'
 import { useDebounce } from '../hooks/useDebounce'
 import { DAYS, SLOTS } from '../types/plan'
@@ -12,24 +12,22 @@ interface DraggableCardProps {
   idMeal: string
   strMeal: string
   strMealThumb: string
+  ariaLabel: string
 }
 
-function DraggableCard({ idMeal, strMeal, strMealThumb }: DraggableCardProps) {
+function DraggableCard({ idMeal, strMeal, strMealThumb, ariaLabel }: DraggableCardProps) {
   return (
     <div
       draggable
       onDragStart={e => {
-        e.dataTransfer.setData(
-          'application/json',
-          JSON.stringify({ idMeal, strMeal, strMealThumb })
-        )
+        e.dataTransfer.setData('application/json', JSON.stringify({ idMeal, strMeal, strMealThumb }))
         e.dataTransfer.effectAllowed = 'copy'
       }}
-      className="flex items-center gap-2 p-1 cursor-grab border rounded"
-      aria-label={`${strMeal} tarifi — sürükleyerek plana ekle`}
+      className="flex items-center gap-2 p-2 cursor-grab active:cursor-grabbing rounded-xl border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 motion-safe:transition-shadow motion-safe:hover:shadow-md select-none"
+      aria-label={ariaLabel}
     >
-      <img src={strMealThumb} alt={strMeal} className="w-12 h-12 object-cover shrink-0 rounded" />
-      <span className="text-sm leading-tight line-clamp-2">{strMeal}</span>
+      <img src={strMealThumb} alt={strMeal} className="w-10 h-10 object-cover rounded-lg shrink-0" />
+      <span className="text-xs font-medium leading-tight line-clamp-2 text-stone-700 dark:text-stone-200">{strMeal}</span>
     </div>
   )
 }
@@ -39,48 +37,45 @@ interface PlanCellProps {
   day: Day
   slot: MealSlot
   entry: PlanEntry
+  dropText: string
+  removeLabel: (name: string) => string
   onDrop: (day: Day, slot: MealSlot, entry: NonNullable<PlanEntry>) => void
   onRemove: (day: Day, slot: MealSlot) => void
 }
 
-function PlanCell({ day, slot, entry, onDrop, onRemove }: PlanCellProps) {
+function PlanCell({ day, slot, entry, dropText, removeLabel, onDrop, onRemove }: PlanCellProps) {
   const [dragOver, setDragOver] = useState(false)
-
   return (
     <td
-      className={`border p-1 min-w-24 align-top ${dragOver ? 'bg-blue-50' : ''}`}
-      onDragOver={e => {
-        e.preventDefault()
-        e.dataTransfer.dropEffect = 'copy'
-        setDragOver(true)
-      }}
+      className={`border border-stone-200 dark:border-stone-700 p-1.5 min-w-[7rem] align-top transition-colors duration-100
+        ${dragOver ? 'bg-brand-50 dark:bg-brand-900/20 border-brand-400' : 'bg-white dark:bg-stone-900'}`}
+      onDragOver={e => { e.preventDefault(); e.dataTransfer.dropEffect = 'copy'; setDragOver(true) }}
       onDragLeave={() => setDragOver(false)}
       onDrop={e => {
-        e.preventDefault()
-        setDragOver(false)
+        e.preventDefault(); setDragOver(false)
         try {
-          const raw = e.dataTransfer.getData('application/json')
-          const parsed = JSON.parse(raw) as NonNullable<PlanEntry>
-          if (parsed && parsed.idMeal) onDrop(day, slot, parsed)
-        } catch {
-          // ignore malformed drag data
-        }
+          const parsed = JSON.parse(e.dataTransfer.getData('application/json')) as NonNullable<PlanEntry>
+          if (parsed?.idMeal) onDrop(day, slot, parsed)
+        } catch { /* ignore */ }
       }}
     >
       {entry ? (
-        <div className="relative">
-          <img src={entry.strMealThumb} alt={entry.strMeal} className="w-full object-cover" />
-          <p className="text-xs mt-1 leading-tight">{entry.strMeal}</p>
+        <div className="relative group">
+          <img src={entry.strMealThumb} alt={entry.strMeal} className="w-full aspect-square object-cover rounded-lg" />
+          <p className="text-xs mt-1 leading-tight text-stone-700 dark:text-stone-300 line-clamp-2">{entry.strMeal}</p>
           <button
             onClick={() => onRemove(day, slot)}
-            aria-label={`${entry.strMeal} kaldır`}
-            className="absolute top-0 right-0 bg-white rounded-full text-xs px-1 leading-none"
+            aria-label={removeLabel(entry.strMeal)}
+            className="absolute top-1 right-1 w-6 h-6 flex items-center justify-center rounded-full bg-rose-500 text-white text-xs opacity-0 group-hover:opacity-100 focus-visible:opacity-100 transition-opacity duration-150"
           >
-            ✕
+            &#10005;
           </button>
         </div>
       ) : (
-        <span className="text-xs text-gray-400 block text-center py-2">Buraya bırak</span>
+        <div className={`min-h-16 flex items-center justify-center rounded-lg border-2 border-dashed text-xs transition-colors duration-100
+          ${dragOver ? 'border-brand-400 text-brand-500' : 'border-stone-200 dark:border-stone-700 text-stone-300 dark:text-stone-600'}`}>
+          {dropText}
+        </div>
       )}
     </td>
   )
@@ -88,6 +83,7 @@ function PlanCell({ day, slot, entry, onDrop, onRemove }: PlanCellProps) {
 
 export default function PlannerPage() {
   const { favorites, plan, setPlanEntry, removePlanEntry } = useAppContext()
+  const { t } = useTranslation()
 
   // Sidebar: favorites fetched by ID
   const [favMeals, setFavMeals] = useState<MealDetail[]>([])
@@ -143,30 +139,31 @@ export default function PlannerPage() {
   const sidebarLoading = query.trim() ? searchLoading : favLoading
 
   return (
-    <div className="p-4">
-      <Link to="/" aria-label="Ana sayfaya geri dön">&larr; Ana Sayfa</Link>
-      <h1 className="text-2xl font-bold my-4">Haftalık Plan</h1>
-
-      <div className="flex gap-4">
-        {/* Left sidebar */}
-        <aside className="w-48 shrink-0">
+    <div>
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50 mb-6">{t.planner.title}</h1>
+      <div className="flex gap-4 items-start">
+        {/* Sidebar */}
+        <aside className="w-44 shrink-0 rounded-xl border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-900 p-3">
           <input
             type="search"
             value={query}
             onChange={e => setQuery(e.target.value)}
-            placeholder="Tarif ara..."
-            aria-label="Tarif ara"
-            className="w-full p-1 border text-sm mb-2"
+            placeholder={t.planner.searchPlaceholder}
+            aria-label={t.search.label}
+            className="w-full rounded-lg border border-stone-200 dark:border-stone-700 bg-white dark:bg-stone-800 px-3 py-1.5 text-xs placeholder:text-stone-400 focus:outline-none focus:ring-2 focus:ring-brand-500 mb-2"
           />
-          {!query.trim() && (
-            <p className="text-xs text-gray-500 mb-2">Favoriler</p>
+          {!query.trim() && <p className="text-xs font-medium text-stone-500 dark:text-stone-400 mb-2">{t.nav.favorites}</p>}
+          {sidebarLoading && (
+            <div className="space-y-2">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="h-14 bg-stone-200 dark:bg-stone-700 rounded-xl animate-pulse" />
+              ))}
+            </div>
           )}
-          {sidebarLoading && <p className="text-xs text-gray-500">Yükleniyor...</p>}
-          {!sidebarLoading && sidebarItems.length === 0 && !query.trim() && (
-            <p className="text-xs text-gray-400">Henüz favori yok.</p>
-          )}
-          {!sidebarLoading && sidebarItems.length === 0 && query.trim() && (
-            <p className="text-xs text-gray-400">Sonuç bulunamadı.</p>
+          {!sidebarLoading && sidebarItems.length === 0 && (
+            <p className="text-xs text-stone-400 dark:text-stone-500 text-center py-4">
+              {query.trim() ? t.planner.noResults : t.planner.noFavorites}
+            </p>
           )}
           <ul className="flex flex-col gap-2">
             {sidebarItems.map(m => (
@@ -175,35 +172,35 @@ export default function PlannerPage() {
                   idMeal={m.idMeal}
                   strMeal={m.strMeal}
                   strMealThumb={m.strMealThumb}
+                  ariaLabel={t.planner.mealLabel(m.strMeal)}
                 />
               </li>
             ))}
           </ul>
         </aside>
-
-        {/* Planner grid */}
+        {/* Grid */}
         <div className="overflow-x-auto flex-1">
-          <table className="border-collapse text-sm w-full">
+          <table className="border-collapse text-xs w-full">
             <thead>
               <tr>
-                <th className="border p-2 text-left bg-gray-50">Öğün</th>
+                <th className="border border-stone-200 dark:border-stone-700 p-2 text-left bg-stone-50 dark:bg-stone-800 font-semibold text-stone-600 dark:text-stone-400 whitespace-nowrap">{t.planner.mealSlot}</th>
                 {DAYS.map(day => (
-                  <th key={day} className="border p-2 text-center bg-gray-50 min-w-24">
-                    {day}
-                  </th>
+                  <th key={day} className="border border-stone-200 dark:border-stone-700 p-2 text-center bg-stone-50 dark:bg-stone-800 font-semibold text-stone-600 dark:text-stone-400 min-w-[7rem]">{t.days[day]}</th>
                 ))}
               </tr>
             </thead>
             <tbody>
               {SLOTS.map(slot => (
                 <tr key={slot}>
-                  <td className="border p-2 font-medium whitespace-nowrap bg-gray-50">{slot}</td>
+                  <td className="border border-stone-200 dark:border-stone-700 p-2 font-semibold whitespace-nowrap bg-stone-50 dark:bg-stone-800 text-stone-600 dark:text-stone-400">{t.slots[slot]}</td>
                   {DAYS.map(day => (
                     <PlanCell
                       key={`${day}-${slot}`}
                       day={day}
                       slot={slot}
                       entry={plan[day][slot]}
+                      dropText={t.planner.drop}
+                      removeLabel={t.detail.removeLabel}
                       onDrop={setPlanEntry}
                       onRemove={removePlanEntry}
                     />

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
 import { useAppContext } from '../context/AppContext'
+import { useTranslation } from '../context/I18nContext'
 import { getMealById, parseIngredients } from '../api/mealdb'
 import { useLocalStorage } from '../hooks/useLocalStorage'
 import { DAYS, SLOTS } from '../types/plan'
@@ -8,6 +8,7 @@ import type { MealDetail } from '../types/meal'
 
 export default function ShoppingPage() {
   const { plan } = useAppContext()
+  const { t } = useTranslation()
   const [items, setItems] = useState<Array<{ name: string; measures: string[] }>>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -56,7 +57,7 @@ export default function ShoppingPage() {
         )
       })
       .catch(err => {
-        if (!cancelled) setError(err instanceof Error ? err.message : 'Bir hata oluştu')
+        if (!cancelled) setError(err instanceof Error ? err.message : t.error.generic)
       })
       .finally(() => {
         if (!cancelled) setLoading(false)
@@ -65,36 +66,57 @@ export default function ShoppingPage() {
     return () => {
       cancelled = true
     }
-  }, [plan])
+  }, [plan, t.error.generic])
 
   function toggleChecked(name: string) {
     setChecked(prev => ({ ...prev, [name]: !prev[name] }))
   }
 
   return (
-    <div className="p-4">
-      <Link to="/" aria-label="Ana sayfaya geri dön">&larr; Ana Sayfa</Link>
-      <h1 className="text-2xl font-bold my-4">Alışveriş Listesi</h1>
-      {loading && <p>Yükleniyor...</p>}
-      {error && <p role="alert">{error}</p>}
-      {!loading && !error && items.length === 0 && <p>Haftalık planda yemek yok.</p>}
+    <div>
+      <h1 className="text-2xl font-bold text-stone-900 dark:text-stone-50 mb-6">{t.shopping.title}</h1>
+
+      {loading && (
+        <div className="space-y-2">
+          {Array.from({ length: 8 }).map((_, i) => (
+            <div key={i} className="h-11 bg-stone-200 dark:bg-stone-700 rounded-xl animate-pulse" style={{ width: `${60 + (i % 4) * 10}%` }} />
+          ))}
+        </div>
+      )}
+
+      {!loading && error && (
+        <div role="alert" className="rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-400 px-4 py-3 text-sm">
+          &#9888; {error}
+        </div>
+      )}
+
+      {!loading && !error && items.length === 0 && (
+        <div className="text-center py-16 text-stone-400">
+          <p className="text-4xl mb-3">&#128722;</p>
+          <p className="font-medium">{t.shopping.empty}</p>
+          <p className="text-sm mt-1">{t.shopping.hint}</p>
+        </div>
+      )}
+
       {!loading && !error && items.length > 0 && (
-        <ul>
+        <ul className="rounded-xl border border-stone-200 dark:border-stone-800 overflow-hidden divide-y divide-stone-100 dark:divide-stone-800">
           {items.map(item => (
-            <li key={item.name} className="flex items-center gap-2 py-1">
+            <li key={item.name} className="flex items-center gap-3 px-4 min-h-11 bg-white dark:bg-stone-900 motion-safe:transition-colors">
               <input
                 type="checkbox"
                 id={`item-${item.name}`}
                 checked={!!checked[item.name]}
                 onChange={() => toggleChecked(item.name)}
-                aria-label={item.name}
+                className="w-4 h-4 accent-brand-500 shrink-0 cursor-pointer"
               />
               <label
                 htmlFor={`item-${item.name}`}
-                className={checked[item.name] ? 'line-through text-gray-400' : ''}
+                className={`flex-1 text-sm py-2.5 cursor-pointer transition-colors duration-150 ${checked[item.name] ? 'line-through text-stone-400 dark:text-stone-600' : 'text-stone-800 dark:text-stone-200'}`}
               >
-                {item.name}
-                {item.measures.length > 0 ? `: ${item.measures.join(', ')}` : ''}
+                <span className="font-medium">{item.name}</span>
+                {item.measures.length > 0 && (
+                  <span className="text-stone-400 dark:text-stone-500 ml-1.5">{item.measures.join(', ')}</span>
+                )}
               </label>
             </li>
           ))}

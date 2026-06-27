@@ -1,1 +1,43 @@
 @import "tailwindcss";
+
+/* Class-based dark mode via data-theme attribute on <html> */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  /* Warm amber brand palette */
+  --color-brand-50:  oklch(97% 0.03 55);
+  --color-brand-100: oklch(93% 0.07 55);
+  --color-brand-200: oklch(86% 0.12 52);
+  --color-brand-400: oklch(78% 0.18 52);
+  --color-brand-500: oklch(70% 0.20 50);
+  --color-brand-600: oklch(60% 0.20 50);
+  --color-brand-700: oklch(50% 0.18 50);
+}
+
+/* Base document colors */
+html {
+  background-color: oklch(98% 0.01 60);
+  color: oklch(18% 0.02 60);
+  color-scheme: light;
+}
+
+html[data-theme="dark"] {
+  background-color: oklch(14% 0.02 60);
+  color: oklch(92% 0.01 60);
+  color-scheme: dark;
+}
+
+/* Global visible focus ring — WCAG AA */
+:focus-visible {
+  outline: 2px solid var(--color-brand-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

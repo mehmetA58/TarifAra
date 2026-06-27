@@ -1,0 +1,93 @@
+export const messages = {
+  nav: {
+    explore: 'Explore',
+    favorites: 'Favorites',
+    planner: 'Planner',
+    shopping: 'Shopping',
+  },
+  search: {
+    placeholder: 'Search recipes, ingredients or categories…',
+    label: 'Search recipes',
+  },
+  diet: {
+    label: 'Diet',
+    vegan: 'Vegan',
+    vegetarian: 'Vegetarian',
+  },
+  categories: {
+    back: '← Categories',
+    empty: 'No categories found.',
+    viewLabel: (name: string) => `View ${name} category`,
+  },
+  meals: {
+    empty: 'No results found.',
+    notFound: 'Recipe not found.',
+  },
+  detail: {
+    back: '← Back',
+    ingredients: 'Ingredients',
+    instructions: 'Instructions',
+    addFavorite: 'Add to Favorites',
+    removeFavorite: 'Favorited',
+    watchYoutube: 'Watch on YouTube',
+    watchYoutubeLabel: (name: string) => `Watch ${name} on YouTube`,
+    removeLabel: (name: string) => `Remove ${name}`,
+    favoriteLabel: (active: boolean): string => active ? 'Remove from favorites' : 'Add to favorites',
+  },
+  favorites: {
+    title: 'Favorites',
+    empty: 'No favorites yet.',
+    hint: 'Add recipes from the recipe detail page.',
+  },
+  planner: {
+    title: 'Weekly Planner',
+    drop: 'Drop here',
+    searchPlaceholder: 'Search…',
+    noFavorites: 'No favorites yet.',
+    noResults: 'No results found.',
+    mealLabel: (name: string) => `${name} — drag to add to planner`,
+    mealSlot: 'Meal',
+  },
+  shopping: {
+    title: 'Shopping List',
+    empty: 'List is empty.',
+    hint: 'Add meals to your weekly planner to see ingredients here.',
+    plannerLink: 'weekly planner',
+  },
+  notFound: {
+    heading: 'Page not found',
+    description: "The page you're looking for doesn't exist.",
+    home: 'Go to Home',
+  },
+  error: {
+    generic: 'An error occurred.',
+  },
+  darkMode: {
+    toLight: 'Switch to light mode',
+    toDark: 'Switch to dark mode',
+  },
+  auth: {
+    signIn: 'Sign In',
+    signUp: 'Sign Up',
+    signOut: 'Sign Out',
+    email: 'Email',
+    password: 'Password',
+    noAccount: "Don't have an account?",
+    hasAccount: 'Already have an account?',
+    error: 'Authentication failed.',
+  },
+  days: {
+    Monday: 'Monday',
+    Tuesday: 'Tuesday',
+    Wednesday: 'Wednesday',
+    Thursday: 'Thursday',
+    Friday: 'Friday',
+    Saturday: 'Saturday',
+    Sunday: 'Sunday',
+  },
+  slots: {
+    Breakfast: 'Breakfast',
+    Lunch: 'Lunch',
+    Dinner: 'Dinner',
+  },
+}
