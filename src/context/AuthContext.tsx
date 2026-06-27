@@ -19,6 +19,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!supabase) { setLoading(false); return }
+
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       setLoading(false)
@@ -32,16 +34,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   async function signIn(email: string, password: string): Promise<AuthError | null> {
+    if (!supabase) return null
     const { error } = await supabase.auth.signInWithPassword({ email, password })
     return error
   }
 
   async function signUp(email: string, password: string): Promise<AuthError | null> {
+    if (!supabase) return null
     const { error } = await supabase.auth.signUp({ email, password })
     return error
   }
 
   async function signOut(): Promise<void> {
+    if (!supabase) return
     await supabase.auth.signOut()
   }
 
