@@ -10,6 +10,7 @@ import PlannerPage from './pages/PlannerPage'
 import ShoppingPage from './pages/ShoppingPage'
 import AuthPage from './pages/AuthPage'
 import NotFoundPage from './pages/NotFoundPage'
+import PantryPage from './pages/PantryPage'
 
 export default function App() {
   return (
@@ -25,6 +26,7 @@ export default function App() {
                 <Route path="/planner" element={<PlannerPage />} />
                 <Route path="/shopping" element={<ShoppingPage />} />
                 <Route path="/auth" element={<AuthPage />} />
+                <Route path="/pantry" element={<PantryPage />} />
                 <Route path="*" element={<NotFoundPage />} />
               </Routes>
             </Layout>

@@ -21,6 +21,7 @@ export default function Layout({ children }: { children: ReactNode }) {
     { to: '/favorites', label: t.nav.favorites },
     { to: '/planner', label: t.nav.planner },
     { to: '/shopping', label: t.nav.shopping },
+    { to: '/pantry', label: t.nav.pantry },
   ]
 
   return (
