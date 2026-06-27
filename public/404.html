@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <!--
+    GitHub Pages SPA redirect — Rafael Pedicini technique.
+    When GH Pages returns 404 for a deep URL (e.g. /TarifAra/favorites),
+    this page encodes the path into a query string and forwards to index.html,
+    which then restores it via history.replaceState (see index.html script).
+  -->
+  <script>
+    var l = window.location;
+    l.replace(
+      l.protocol + '//' + l.hostname + (l.port ? ':' + l.port : '') +
+      l.pathname.split('/').slice(0, 1 + 1).join('/') + '/?/' +
+      l.pathname.slice(1).replace(/&/g, '~and~') +
+      (l.search ? '&' + l.search.slice(1).replace(/&/g, '~and~') : '') +
+      l.hash
+    );
+  </script>
+</head>
+</html>
